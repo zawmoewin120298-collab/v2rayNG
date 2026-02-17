@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive' # Submodules တွေအကုန်ပါအောင် ဆွဲခိုင်းတာပါ
+          submodules: 'recursive'
 
       - name: set up JDK 17
         uses: actions/setup-java@v4
@@ -19,13 +19,18 @@ jobs:
           cache: gradle
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        # folder ထဲကို အရင်ဝင်ပြီးမှ permission ပေးခိုင်းလိုက်ပါတယ်
+        run: chmod +x v2rayNG/gradlew 
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace # Error သိရအောင် stacktrace ထည့်ထားပါတယ်
+        # folder ထဲဝင်ပြီးမှ build ခိုင်းတာပါ
+        run: |
+          cd v2rayNG
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: v2rayNG-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          # APK ထွက်မယ့် လမ်းကြောင်းကိုလည်း folder ထဲ ပြောင်းပေးထားပါတယ်
+          path: v2rayNG/app/build/outputs/apk/debug/*.apk

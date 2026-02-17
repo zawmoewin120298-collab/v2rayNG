@@ -18,19 +18,20 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        # folder ထဲကို အရင်ဝင်ပြီးမှ permission ပေးခိုင်းလိုက်ပါတယ်
-        run: chmod +x v2rayNG/gradlew 
-
-      - name: Build Debug APK
-        # folder ထဲဝင်ပြီးမှ build ခိုင်းတာပါ
+      - name: Find and Build APK
         run: |
-          cd v2rayNG
+          # gradlew ဖိုင်ရှိတဲ့နေရာကို အလိုအလျောက် ရှာခိုင်းလိုက်တာပါ
+          GRADLEW_PATH=$(find . -name gradlew)
+          GRADLE_DIR=$(dirname "$GRADLEW_PATH")
+          
+          echo "Found gradlew at: $GRADLEW_PATH"
+          chmod +x "$GRADLEW_PATH"
+          
+          cd "$GRADLE_DIR"
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: v2rayNG-debug-apk
-          # APK ထွက်မယ့် လမ်းကြောင်းကိုလည်း folder ထဲ ပြောင်းပေးထားပါတယ်
-          path: v2rayNG/app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"

@@ -1,13 +1,16 @@
 name: Build Android APK
 
 on:
-  workflow_dispatch: # လက်နဲ့နှိပ်ပြီး Build ဖို့
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
       - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -15,15 +18,20 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew assembleRelease
+      - name: Find and Build APK
+        run: |
+          # gradlew ဖိုင်ရှိတဲ့နေရာကို အလိုအလျောက် ရှာခိုင်းလိုက်တာပါ
+          GRADLEW_PATH=$(find . -name gradlew)
+          GRADLE_DIR=$(dirname "$GRADLEW_PATH")
+          
+          echo "Found gradlew at: $GRADLEW_PATH"
+          chmod +x "$GRADLEW_PATH"
+          
+          cd "$GRADLE_DIR"
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: v2rayNG-release-apk
-          path: app/build/outputs/apk/release/*.apk
-
+          name: v2rayNG-debug-apk
+          path: "**/build/outputs/apk/debug/*.apk"

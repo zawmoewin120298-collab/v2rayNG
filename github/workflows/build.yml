@@ -1,4 +1,4 @@
-name: Build APK
+Name: Build APK
 
 on:
   workflow_dispatch:
@@ -18,11 +18,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        # အရှုပ်အရှင်းကင်းအောင် တန်းပြီး Build ခိုင်းလိုက်ပါတယ်
-        run: ./gradlew assembleDebug --stacktrace
+        # Folder ထဲဝင်ပြီးမှ Build လုပ်ဖို့ ပြင်ဆင်ထားပါတယ်
+        run: |
+          cd V2rayNG
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: v2rayNG-debug
-          path: app/build/outputs/apk/debug/*.apk
+          # Path ကိုလည်း folder အသစ်အတိုင်း ပြင်ပေးရပါတယ်
+          path: V2rayNG/app/build/outputs/apk/fdroid/debug/*.apk

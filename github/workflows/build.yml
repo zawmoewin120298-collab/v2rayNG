@@ -1,4 +1,4 @@
-Name: Build APK
+name: Build My Custom APK
 
 on:
   workflow_dispatch:
@@ -7,26 +7,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: set up JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Build with Gradle
-        # Folder ထဲဝင်ပြီးမှ Build လုပ်ဖို့ ပြင်ဆင်ထားပါတယ်
         run: |
-          cd V2rayNG
+          # gradlew ဖိုင် ဘယ်မှာရှိလဲ ရှာပြီး အဲဒီ folder ထဲဝင်မယ်
+          GRADLEW_PATH=$(find . -name gradlew)
+          GRADLE_DIR=$(dirname $GRADLEW_PATH)
+          cd $GRADLE_DIR
+          
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: v2rayNG-debug
-          # Path ကိုလည်း folder အသစ်အတိုင်း ပြင်ပေးရပါတယ်
-          path: V2rayNG/app/build/outputs/apk/fdroid/debug/*.apk
+          name: My-v2rayNG-APK
+          # APK ဖိုင်ကို တစ်စုံလုံး လိုက်ရှာပြီး တင်ပေးမှာပါ
+          path: "**/build/outputs/apk/**/*.apk"

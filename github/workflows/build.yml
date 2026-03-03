@@ -1,4 +1,4 @@
-name: Build My Custom APK
+name: Super Easy Build
 
 on:
   workflow_dispatch:
@@ -7,30 +7,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      - uses: actions/checkout@v4
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Gradle
+      - name: Auto-Find and Build
         run: |
-          # gradlew ဖိုင် ဘယ်မှာရှိလဲ ရှာပြီး အဲဒီ folder ထဲဝင်မယ်
-          GRADLEW_PATH=$(find . -name gradlew)
-          GRADLE_DIR=$(dirname $GRADLEW_PATH)
-          cd $GRADLE_DIR
+          # gradlew ရှိတဲ့ နေရာကို ရှာမယ်
+          find . -name "gradlew" -exec chmod +x {} \;
+          GRADLEW_EXEC=$(find . -name "gradlew" | head -n 1)
           
-          chmod +x gradlew
+          # အဲဒီ folder ထဲဝင်ပြီး Build လုပ်မယ်
+          cd $(dirname $GRADLEW_EXEC)
           ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Upload Result
         uses: actions/upload-artifact@v4
         with:
-          name: My-v2rayNG-APK
-          # APK ဖိုင်ကို တစ်စုံလုံး လိုက်ရှာပြီး တင်ပေးမှာပါ
+          name: My-v2rayNG-App
           path: "**/build/outputs/apk/**/*.apk"
